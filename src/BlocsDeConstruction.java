@@ -8,27 +8,43 @@ import java.util.ArrayList;
 
 
 public class BlocsDeConstruction {
-    static Image lesBlocs = new Image("Plataformas.png");
-    static int xImage = 384;
-    static int yImage = 512;
-    Rectangle2D bloc;
-    ImageView skin;
+    private static final Image lesBlocs = new Image("Plataformas.png");
+    private static int xImage = 384;
+    private static int yImage = 512;
+    private Rectangle2D bloc;
+    private ImageView skin;
 
-    public static boolean pixelTransparent(int x, int y){
+    public Rectangle2D getBloc() {
+        return bloc;
+    }
+
+    /** Renvoie l'image view à partir d'un rectangle2D */
+    private ImageView skinBloc(Rectangle2D bloc){
+        ImageView blocView = new ImageView(lesBlocs);
+        blocView.setViewport(bloc);
+        return blocView;
+    }
+
+    /** Constructeur des blocs à partir d'une liste qui donnera les coordonnées du triangle */
+    private BlocsDeConstruction(int[] list){
+        this.bloc = new Rectangle2D(list[0],list[1], list[2], list[3]);
+        this.skin = skinBloc(this.bloc);
+    }
+
+    /** Renvoie si le pixel est transparent */
+    private static boolean pixelTransparent(int x, int y){
         PixelReader unPixel = lesBlocs.getPixelReader();
         int valPix = unPixel.getArgb(x,y);
         if ( valPix == 0){
             return true;
         }
-        else {return false;}
+        else return false;
     }
 
-    public BlocsDeConstruction(int[] list){
-        this.bloc = new Rectangle2D(list[0],list[1], list[2], list[3]);
-        this.skin = skinBloc(this.bloc);
-    }
 
-    static public int [] recupBlocs(String nomBloc){
+
+
+    static private int [] recupBlocs(String nomBloc){
         int [] list = new int[4];
         int debutX = xImage;
         int debutY = yImage;
@@ -78,31 +94,32 @@ public class BlocsDeConstruction {
     }
 
 
-        public ImageView skinBloc(Rectangle2D bloc){
-            ImageView blocView = new ImageView(lesBlocs);
-            blocView.setViewport(bloc);
-            return blocView;
+    /** Permet de placer des blocs à partir de leur quantité, leur emplacement, leur nom et le groupe auquel ils sont rattachés
+     * La liste de ces blocs est renvoyée*/
+    public static ArrayList<BlocsDeConstruction> placerBloc(int quantiteBloc,int placementBloc,String typeBloc, Group groupNiveau){
+        ArrayList<BlocsDeConstruction> list = new ArrayList<>();
+        if (quantiteBloc == 1){
+            BlocsDeConstruction bloc = new BlocsDeConstruction(BlocsDeConstruction.recupBlocs(typeBloc));
+            bloc.skin.setX((bloc.bloc.getMaxX()-bloc.bloc.getMinX())*(placementBloc));
+            bloc.skin.setY(630);
+            groupNiveau.getChildren().add(bloc.skin);
+            list.add(bloc);
+            return list;
         }
 
-        public static void placerBloc(int quantiteBloc,int placementBloc,String typeBloc, Group groupNiveau){
-            if (quantiteBloc == 1){
-                BlocsDeConstruction bloc = new BlocsDeConstruction(BlocsDeConstruction.recupBlocs(typeBloc));
-                bloc.skin.setX((bloc.bloc.getMaxX()-bloc.bloc.getMinX())*(placementBloc));
-                bloc.skin.setY(630);
-                groupNiveau.getChildren().add(bloc.skin);
+        else {
+            ArrayList <BlocsDeConstruction> lesBlocs = new ArrayList<>();
+            for (int i = 0; i < quantiteBloc;i++){
+                lesBlocs.add(i,new BlocsDeConstruction(BlocsDeConstruction.recupBlocs(typeBloc)));
+                lesBlocs.get(i).skin.setX((lesBlocs.get(i).bloc.getMaxX()-lesBlocs.get(i).bloc.getMinX())*(i+placementBloc));
+                lesBlocs.get(i).skin.setY(630);
+                groupNiveau.getChildren().add(lesBlocs.get(i).skin);
+                list.add(lesBlocs.get(i));
             }
-
-            else {
-                ArrayList <BlocsDeConstruction> lesBlocs = new ArrayList<>();
-                for (int i = 0; i < quantiteBloc;i++){
-                    lesBlocs.add(i,new BlocsDeConstruction(BlocsDeConstruction.recupBlocs(typeBloc)));
-                    lesBlocs.get(i).skin.setX((lesBlocs.get(i).bloc.getMaxX()-lesBlocs.get(i).bloc.getMinX())*(i+placementBloc));
-                    lesBlocs.get(i).skin.setY(630);
-                    groupNiveau.getChildren().add(lesBlocs.get(i).skin);
-                }
-            }
+            return list;
         }
-
-
     }
+
+
+}
 
