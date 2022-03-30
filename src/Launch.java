@@ -2,12 +2,20 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.scene.canvas.Canvas;
+
+import java.awt.*;
+
+import static javafx.scene.input.KeyCode.D;
 
 
 public class Launch extends Application {
@@ -60,10 +68,27 @@ public class Launch extends Application {
         Start.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Niveau premierNiveau = new Niveau(); // Construction du premier niveau
-                premierNiveau.setSceneNiveau(); // La scene du premier niveau est construite et associée au niveau créé
-                primaryStage.setScene(premierNiveau.getSceneNiveau()); // La scene du premier niveau est récupérée et affichée dans la fenêtre
+                Canvas canvasPremierNiveau = new Canvas(1000, 650);
+                GraphicsContext gcNiveau = canvasPremierNiveau.getGraphicsContext2D();
+                rootMenu.getChildren().add(canvasPremierNiveau);
+
+                Personnage perso = new Personnage();
+                Niveau premierNiveau = new Niveau(perso); // Construction du premier niveau
+                premierNiveau.constructionPremierNiveau();
+
+                premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY());
+
                 System.out.println("TestBoutonStart");
+
+                primaryStage.getScene().setOnKeyPressed(e->{
+                    if (e.getCode() == D){
+                        System.out.println("Lettre D clické");
+
+
+                    }
+                    perso.deplacePerso(e.getCode());
+                    premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY());
+                });
             }
         });
 
@@ -84,16 +109,26 @@ public class Launch extends Application {
 
 
 
-/*        AnimationTimer gameLoopTimer = new AnimationTimer() {
+        AnimationTimer gameLoopTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
                 double t = (l - startNanoTime) / 1000000000.0;
-                primaryStage.setScene(Niveau.premierNiveau());
-                Entite.gravite(Niveau.perso,groupNiveau);
+/*
+                primaryStage.getScene().setOnKeyPressed(e->{
+                    if (e.getCode() == D){
+                        System.out.println("Lettre D clické");
+                        Personnage perso = premierNiveau.getPerso();
+                        //premierNiveau.setPerso(perso);
+                        //premierNiveau.setSceneNiveau();
+                        //primaryStage.setScene(premierNiveau.getSceneNiveau());
+                        premierNiveau.getPerso().modifierPosition(premierNiveau.getPerso(),(Group)premierNiveau.getSceneNiveau().getRoot(),2,0);
+                    }
+                });*/
+
 
 
             }
-        };*/
+        };
 
     }
 

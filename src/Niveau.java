@@ -12,11 +12,15 @@ public class Niveau {
     private static final Image fondEcran = new Image("2224.png");
     private ArrayList <BlocsDeConstruction> listeBlocs;
     private Personnage perso;
-    private Scene sceneNiveau;
 
 
-    private Niveau(Scene sceneNiveau){
-        this.sceneNiveau = sceneNiveau;
+
+    public static Image getFondEcran() {
+        return fondEcran;
+    }
+
+    public Niveau(Personnage perso){
+        this.perso = perso;
         }
 
     public Niveau(){
@@ -26,63 +30,73 @@ public class Niveau {
         this.perso = perso;
     }
 
-    /** Lors de la construction du niveau, on lui associe la dispoition du premier niveau */
-    public void setSceneNiveau() {
-        this.sceneNiveau = this.constructionPremierNiveau();
-    }
 
     /** Getter pour la liste des blocs dans un niveau */
     public ArrayList<BlocsDeConstruction> getListeBlocs() {
         return listeBlocs;
     }
 
-    public Scene getSceneNiveau() {
-        return sceneNiveau;
+    public Personnage getPerso() {
+        return perso;
     }
 
-    /** A partir de la quantité de blocs, du placement et du groupe,
-     * les blocs sont dessinés et ajoutés à une liste qui est renvoyée.*/
-    private ArrayList<BlocsDeConstruction> miseEnPlaceDesBlocs(int quantiteBloc,int placement, Group groupNiveau){
-        Niveau premierNiveau = new Niveau();
-        premierNiveau.listeBlocs = new ArrayList<BlocsDeConstruction>();
-        premierNiveau.listeBlocs.addAll(BlocsDeConstruction.placerBloc(1,placement,"bloc1",groupNiveau));
-        premierNiveau.listeBlocs.addAll(BlocsDeConstruction.placerBloc(quantiteBloc-2,placement+1,"bloc3",groupNiveau));
-        premierNiveau.listeBlocs.addAll(BlocsDeConstruction.placerBloc(1,placement+quantiteBloc-1,"bloc2",groupNiveau));
-        return premierNiveau.listeBlocs;
-    }
 
     /** Construction du niveau 1
-     * Renvoie la scene à afficher*/
-    private Scene constructionPremierNiveau() {
+     */
+    public void constructionPremierNiveau() {
 
-        // Creation du groupe contenant le fond, les blocs et le personnage
-        Group groupNiveau = new Group();
-        // Creation de la scene contenant ce groupe
-        Scene sceneNiveau = new Scene(groupNiveau, 1000, 650);
-        // Creation du niveau avec comme attribut sceneNiveau la scene créée
-        Niveau premierNiveau = new Niveau(sceneNiveau);
+        // Mise en place des blocs en les ajoutant dans la liste des blocs
+        this.listeBlocs = new ArrayList<>();
+        int intervalle = 33;
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",0,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*2,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*3,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*4,629));
 
-        // Creation du canvas sur lequel le gc dessinera
-        Canvas canvasPremierNiveau = new Canvas(1000, 650);
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",intervalle*6,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*7,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*8,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*9,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*10,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*11,629));
 
-        // Creation gc qui permettra de dessiner sur le canvas créé
-        GraphicsContext gc = canvasPremierNiveau.getGraphicsContext2D();
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",intervalle*13,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*14,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*15,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*16,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*17,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*18,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*19,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*20,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*21,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*22,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*23,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*24,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*25,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*26,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*27,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*28,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*29,629));
 
-        // Fond d'écran statique est dessiné sur toute la fenêtre et ajout au canvas
-        gc.drawImage(fondEcran, 0, 0,1000,650);
-        groupNiveau.getChildren().addAll(canvasPremierNiveau);
+        this.perso.setPositionX(20);
+        this.perso.setPositionY(550);
 
-        // Mise en place des blocs en les ajoutant dans la liste des blocs et en les dessinant
-        premierNiveau.listeBlocs = new ArrayList<>();
 
-        premierNiveau.listeBlocs.addAll(miseEnPlaceDesBlocs(5,0,groupNiveau));
-        premierNiveau.listeBlocs.addAll(miseEnPlaceDesBlocs(10,7,groupNiveau));
-        premierNiveau.listeBlocs.addAll(miseEnPlaceDesBlocs(13,19,groupNiveau));
+    }
 
-        // Le personnage (unique) est associé au niveau créé
-        premierNiveau.setPerso(Personnage.placerPerso(groupNiveau,25,520));
+    public void drawNiveau(Canvas canvasPremierNiveau,  double X, double Y){
+        GraphicsContext gcDraw = canvasPremierNiveau.getGraphicsContext2D();
 
-        return sceneNiveau;
+        gcDraw.drawImage(fondEcran, 0, 0,1000,650);
+
+        for (int i = 0 ; i < this.listeBlocs.size() ; i++){
+            gcDraw.drawImage(this.listeBlocs.get(i).getSkin(),this.listeBlocs.get(i).getBloc().getMinX(),this.listeBlocs.get(i).getBloc().getMinY());
+        }
+
+        gcDraw.drawImage(this.perso.getImage(),X,Y);
+
+
     }
 
 
