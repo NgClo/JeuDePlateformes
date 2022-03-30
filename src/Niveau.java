@@ -1,10 +1,6 @@
-import javafx.event.EventHandler;
-import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import java.util.ArrayList;
 
 
@@ -54,17 +50,14 @@ public class Niveau {
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*3,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*4,629));
 
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",intervalle*6,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*7,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",intervalle*7,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*8,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*9,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*10,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*11,629));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*11,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*12,629));
 
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",intervalle*13,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*14,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*15,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*16,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",intervalle*16,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*17,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*18,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*19,630));
@@ -76,8 +69,7 @@ public class Niveau {
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*25,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*26,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*27,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*28,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*29,629));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*28,629));
 
         this.perso.setPositionX(20);
         this.perso.setPositionY(550);

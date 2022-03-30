@@ -2,18 +2,18 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import javafx.scene.canvas.Canvas;
 
-import java.awt.*;
 
 import static javafx.scene.input.KeyCode.D;
 
@@ -32,7 +32,7 @@ public class Launch extends Application {
 
     public void start(Stage primaryStage){
 
-        long startNanoTime = System.nanoTime();
+
 
 
         // Création du panneau
@@ -68,6 +68,7 @@ public class Launch extends Application {
         Start.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+
                 Canvas canvasPremierNiveau = new Canvas(1000, 650);
                 GraphicsContext gcNiveau = canvasPremierNiveau.getGraphicsContext2D();
                 rootMenu.getChildren().add(canvasPremierNiveau);
@@ -83,12 +84,45 @@ public class Launch extends Application {
                 primaryStage.getScene().setOnKeyPressed(e->{
                     if (e.getCode() == D){
                         System.out.println("Lettre D clické");
-
-
+                    }
+                    if (e.getCode() == KeyCode.ESCAPE){
+                        primaryStage.close();
                     }
                     perso.deplacePerso(e.getCode());
                     premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY());
                 });
+
+                // AnimationTimer test
+                final long startNanoTime = System.nanoTime();
+                new AnimationTimer() {
+                    @Override
+                    public void handle(long l) {
+                        double t = (l - startNanoTime) / 1000000000.0;
+
+                        perso.gravite(premierNiveau);
+                        premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY());
+
+                        if (perso.getPositionY() > 1000){
+                            System.out.println("Perdu !");
+                            this.stop();
+                            gcNiveau.rect(100,200,400,200);
+                            gcNiveau.setFill(Color.LIGHTGREEN);
+                            gcNiveau.fillRect(100,200,800,200);
+                            gcNiveau.setFill(Color.BLACK);
+                            gcNiveau.setFont(Font.font(40));
+                            gcNiveau.fillText("Pour rejouer, tapez 'R'.",300,300);
+                            primaryStage.getScene().setOnKeyPressed(e->{
+                                if (e.getCode() == KeyCode.R){
+                                    perso.deplacePerso(e.getCode());
+                                    this.start();
+                                }
+                            });
+
+
+                            }
+
+                    }
+                }.start();
             }
         });
 
@@ -109,26 +143,7 @@ public class Launch extends Application {
 
 
 
-        AnimationTimer gameLoopTimer = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                double t = (l - startNanoTime) / 1000000000.0;
-/*
-                primaryStage.getScene().setOnKeyPressed(e->{
-                    if (e.getCode() == D){
-                        System.out.println("Lettre D clické");
-                        Personnage perso = premierNiveau.getPerso();
-                        //premierNiveau.setPerso(perso);
-                        //premierNiveau.setSceneNiveau();
-                        //primaryStage.setScene(premierNiveau.getSceneNiveau());
-                        premierNiveau.getPerso().modifierPosition(premierNiveau.getPerso(),(Group)premierNiveau.getSceneNiveau().getRoot(),2,0);
-                    }
-                });*/
 
-
-
-            }
-        };
 
     }
 
