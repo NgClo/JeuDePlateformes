@@ -38,6 +38,8 @@ public class Niveau {
 
 
     /** Construction du niveau 1
+     * avec placement des blocs
+     * et placement du personnage
      */
     public void constructionPremierNiveau() {
 
@@ -72,11 +74,13 @@ public class Niveau {
         this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*28,629));
 
         this.perso.setPositionX(20);
-        this.perso.setPositionY(550);
+        this.perso.setPositionY(450);
 
 
     }
 
+    /** Permet de dessiner le niveau en fonction de la position du personnage
+     * Les blocs sont dans une liste associée au niveau et cette liste est récupérée pour redessiner le niveau.*/
     public void drawNiveau(Canvas canvasPremierNiveau,  double X, double Y){
         GraphicsContext gcDraw = canvasPremierNiveau.getGraphicsContext2D();
 

@@ -26,8 +26,7 @@ public class BlocsDeConstruction {
     }
 
     /** Constructeur des blocs
-     * avec leur skin et leur rectangle
-     * */
+     * avec leur skin et leur rectangle. */
     public BlocsDeConstruction(String nomBloc, double positionX, double positionY){
         if (nomBloc == "Bloc1") {
                 this.skin = new Image("PlateformesBloc1.png");

@@ -2,7 +2,6 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -31,9 +30,6 @@ public class Launch extends Application {
     }
 
     public void start(Stage primaryStage){
-
-
-
 
         // Création du panneau
         StackPane rootMenu = new StackPane();
@@ -73,36 +69,70 @@ public class Launch extends Application {
                 GraphicsContext gcNiveau = canvasPremierNiveau.getGraphicsContext2D();
                 rootMenu.getChildren().add(canvasPremierNiveau);
 
-                Personnage perso = new Personnage();
-                Niveau premierNiveau = new Niveau(perso); // Construction du premier niveau
-                premierNiveau.constructionPremierNiveau();
+                Personnage perso = new Personnage(); // Construction du personnage
+                Niveau premierNiveau = new Niveau(perso); // Construction d'un niveau
+                premierNiveau.constructionPremierNiveau(); // Construction du premier niveau
 
-                premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY());
+                premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY()); // Dessine le premier niveau
 
                 System.out.println("TestBoutonStart");
 
-                primaryStage.getScene().setOnKeyPressed(e->{
-                    if (e.getCode() == D){
-                        System.out.println("Lettre D clické");
-                    }
-                    if (e.getCode() == KeyCode.ESCAPE){
-                        primaryStage.close();
-                    }
-                    perso.deplacePerso(e.getCode());
-                    premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY());
-                });
 
-                // AnimationTimer test
                 final long startNanoTime = System.nanoTime();
                 new AnimationTimer() {
                     @Override
                     public void handle(long l) {
                         double t = (l - startNanoTime) / 1000000000.0;
 
-                        perso.gravite(premierNiveau);
+                        // Récupère les touches clickées et permet le mouvement
+                        primaryStage.getScene().setOnKeyPressed(e->{
+                            if (e.getCode() == D){
+                                System.out.println("Lettre D clické");
+                            }
+                            if (e.getCode() == KeyCode.ESCAPE){
+                                primaryStage.close();
+                            }
+                            if (e.getCode() == KeyCode.Z){
+                                System.out.println("Lettre Z clické");
+                            }
+                            KeyCode input = e.getCode();
+                            perso.deplacePerso(input, premierNiveau);
+
+                        });
+
+                        // Récupère les touches quand elles sont relachées et permet l'arrêt
+                        primaryStage.getScene().setOnKeyReleased(e->{
+                            if (e.getCode() == D){
+                                System.out.println("Lettre D relaché");
+                            }
+
+                            if (e.getCode() == KeyCode.Z){
+                                System.out.println("Lettre Z relaché");
+                            }
+                            KeyCode input = e.getCode();
+                            perso.ralentissement(input, premierNiveau);
+
+                        });
+
+
+                        perso.setTombe(perso.gravite(premierNiveau));
+
+                        // Permet de remettre la vitesse à 0 une fois que le personnage a atteri
+                        // Si le personnage n'est pas en train de tomber mais qu'il tombait à la boucle précédent
+                        // Alors la vitesse est remise à O
+
+                        if (perso.getTombe() == false){
+                            if (perso.getTombeMoinsUn()==true){
+                                perso.resetVitesse();
+                            }
+                        }
+                        perso.setTombeMoinsUn(perso.gravite(premierNiveau));
+
+
                         premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY());
 
-                        if (perso.getPositionY() > 1000){
+
+                        if (perso.getPositionY() > 1000){ // Le personnage tombe
                             System.out.println("Perdu !");
                             this.stop();
                             gcNiveau.rect(100,200,400,200);
@@ -111,9 +141,9 @@ public class Launch extends Application {
                             gcNiveau.setFill(Color.BLACK);
                             gcNiveau.setFont(Font.font(40));
                             gcNiveau.fillText("Pour rejouer, tapez 'R'.",300,300);
-                            primaryStage.getScene().setOnKeyPressed(e->{
+                            primaryStage.getScene().setOnKeyPressed(e->{ // Possibilité de rejouer
                                 if (e.getCode() == KeyCode.R){
-                                    perso.deplacePerso(e.getCode());
+                                    perso.deplacePerso(e.getCode(), premierNiveau);
                                     this.start();
                                 }
                             });
@@ -139,11 +169,6 @@ public class Launch extends Application {
                 primaryStage.close();
             }
         });
-
-
-
-
-
 
     }
 
