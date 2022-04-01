@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 
 public class Niveau {
-    private static final Image fondEcran = new Image("2224.png");
+    private static final Image fondEcran = new Image("jungle.png");
     private ArrayList <BlocsDeConstruction> listeBlocs; // Liste des blocs dans un niveau
     private final Personnage perso;
 

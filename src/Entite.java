@@ -92,7 +92,8 @@ public class Entite {
         setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
         for (int i = 0; i < niveau.getListeBlocs().size();i++){
             if (this.typeHitBox("Pied").getMinY() < niveau.getListeBlocs().get(i).getBloc().getMinY()-100){
-                return true;
+                    if (niveau.getListeBlocs().get(i).getBloc().contains(getPositionX(),niveau.getListeBlocs().get(i).getBloc().getMinY())){
+                        return true;}
             }
         }
         return false;

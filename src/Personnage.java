@@ -100,22 +100,22 @@ public class Personnage extends Entite {
     }
 
     protected Image getFrame(Image[] listeImage){
+        Image imageRetourne;
         if (listeImage == this.listeImageIdle){
-            Image imageRetourne = listeImage[this.countImageIdle];
+            imageRetourne = listeImage[this.countImageIdle];
             if (this.countImageIdle < (listeImage.length-1)){
                 setCountImageIdle(this.countImageIdle+1);
             }
             else setCountImageIdle(0);
-            return imageRetourne;
         }
         else{
-            Image imageRetourne = listeImage[this.countImageRun];
+            imageRetourne = listeImage[this.countImageRun];
             if (this.countImageRun < (listeImage.length-1)){
                 setCountImageRun(this.countImageRun+1);
             }
             else setCountImageRun(0);
-            return imageRetourne;
         }
+        return imageRetourne;
     }
 
 
