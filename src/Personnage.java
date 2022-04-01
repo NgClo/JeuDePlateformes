@@ -4,9 +4,6 @@ import javafx.scene.input.KeyCode;
 
 public class Personnage extends Entite {
 
-    private int countObjet;
-
-
     Personnage(){
         super();
     }
@@ -99,12 +96,10 @@ public class Personnage extends Entite {
         listeImageRun[30] = listeImageRun[28];
         listeImageRun[31] = listeImageRun[28];
 
-
         this.listeImageRun = listeImageRun;
     }
 
-
-    public Image getFrame(Image[] listeImage){
+    protected Image getFrame(Image[] listeImage){
         if (listeImage == this.listeImageIdle){
             Image imageRetourne = listeImage[this.countImageIdle];
             if (this.countImageIdle < (listeImage.length-1)){
@@ -112,7 +107,6 @@ public class Personnage extends Entite {
             }
             else setCountImageIdle(0);
             return imageRetourne;
-
         }
         else{
             Image imageRetourne = listeImage[this.countImageRun];
@@ -121,14 +115,12 @@ public class Personnage extends Entite {
             }
             else setCountImageRun(0);
             return imageRetourne;
-
         }
-
     }
 
 
     /** Selon la touche sur laquelle on appuie, on applique une certaine vitesse*/
-    public void deplacePerso(KeyCode keycode, Niveau niveau){
+    protected void deplacePerso(KeyCode keycode, Niveau niveau){
         if (keycode == KeyCode.D){
             this.addVitesse(4,0); // Ajout d'une vitesse vers la droite
         }
@@ -143,7 +135,7 @@ public class Personnage extends Entite {
 
         // Permet le saut si le personnage se trouve sous le "plafond"
         if (keycode == KeyCode.Z){
-            if (this.plafond(niveau) == false){
+            if (!this.plafond(niveau)){
                 this.addVitesse(0,-4);
             }
         }
@@ -151,11 +143,10 @@ public class Personnage extends Entite {
         // Mise à jour des positions en fonction des vitesses
         setPositionX(getPositionX()+this.vitesseX);
         setPositionY(getPositionY()+this.vitesseY);
-
     }
 
     /** Permet de remettre à 0 la vitesse lorsque les touches sont relachées */
-    public void ralentissement (KeyCode keycode, Niveau niveau){
+    protected void ralentissement (KeyCode keycode){
         if (keycode == KeyCode.D){
             this.addVitesse(-getVitesseX(),0);
         }
@@ -167,7 +158,9 @@ public class Personnage extends Entite {
         setPositionY(getPositionY()+this.vitesseY);
     }
 
-    public boolean remporteNiveau(Niveau niveau){
+    /** Détermine si le niveau est remporté.
+     * Pour cela, le personnage doit se trouver sur le bloc de fin de niveau.*/
+    protected boolean remporteNiveau(Niveau niveau){
         setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
             for (int i = 0; i < niveau.getListeBlocs().size();i++){
                 if (this.typeHitBox("Pied").intersects(niveau.getListeBlocs().get(i).getBloc())){

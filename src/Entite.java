@@ -1,6 +1,8 @@
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 
+import java.util.Objects;
+
 public class Entite {
 
     private Rectangle2D hitBox;
@@ -17,15 +19,12 @@ public class Entite {
     protected int countImageIdle;
     protected int countImageRun;
 
-
-
     protected void setCountImageIdle(int countImage) {
         this.countImageIdle = countImage;
     }
     protected void setCountImageRun(int countImage) {
         this.countImageRun = countImage;
     }
-
 
     protected Entite() {
         this.hitBox = new Rectangle2D(positionX, positionY, 50,53);
@@ -35,14 +34,15 @@ public class Entite {
         return tombe;
     }
 
-    public void setTombe(boolean tombe) {
+    protected void setTombe(boolean tombe) {
         this.tombe = tombe;
     }
+
     public boolean getTombeMoinsUn() {
         return tombeMoinsUn;
     }
 
-    public void setTombeMoinsUn(boolean tombeMoinsUn) {
+    protected void setTombeMoinsUn(boolean tombeMoinsUn) {
         this.tombeMoinsUn = tombeMoinsUn;
     }
 
@@ -74,14 +74,10 @@ public class Entite {
         return vitesseX;
     }
 
-    public double getVitesseY() {
-        return vitesseY;
-    }
-
     /** Permet au personne de chuter lorsqu'il ne se trouve pas sur un bloc
      * La chute s'arrête s'il atteint les blocs*/
     public boolean gravite(Niveau niveau){
-        if(this.estSurUnBloc(niveau) == false){
+        if(!this.estSurUnBloc(niveau)){
             this.addVitesse(0,0.2);
             this.setPositionX(getPositionX()+this.vitesseX);
             this.setPositionY(getPositionY()+this.vitesseY);
@@ -92,19 +88,17 @@ public class Entite {
 
     /** Le plafond est déterminé par le bloc sous le personnage.
      * S'il est dépassé, la méthode retourne true.*/
-    public boolean plafond(Niveau niveau){
+    protected boolean plafond(Niveau niveau){
         setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
         for (int i = 0; i < niveau.getListeBlocs().size();i++){
             if (this.typeHitBox("Pied").getMinY() < niveau.getListeBlocs().get(i).getBloc().getMinY()-100){
                 return true;
-
             }
-
         }
         return false;
     }
 
-    /** Détermine si le personne est sur un bloc ou non.*/
+    /** Détermine si le personnage est sur un bloc ou non.*/
     protected boolean estSurUnBloc(Niveau niveau){
         setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
         boolean estSurUnBloc = false;
@@ -120,7 +114,7 @@ public class Entite {
      * D'autres types seront ajoutés selon les besoins. */
     protected Rectangle2D typeHitBox(String typeHitBox){
         Rectangle2D correctHitBox;
-        if (typeHitBox == "Pied"){
+        if (Objects.equals(typeHitBox, "Pied")){
             correctHitBox = new Rectangle2D(this.hitBox.getMinX()+20,this.hitBox.getMinY()+45,10,5);
             return correctHitBox;
         }
@@ -128,13 +122,13 @@ public class Entite {
     }
 
     /** Remet à 0 la vitesse.*/
-    public void resetVitesse(){
+    protected void resetVitesse(){
         this.vitesseX = 0;
         this.vitesseY = 0;
     }
 
-    /** Mise à jour de la vitesse*/
-    public void addVitesse(double positionX, double positionY) {
+    /** Mise à jour de la vitesse sous réserve qu'elle est inférieure à la vitesse max*/
+    protected void addVitesse(double positionX, double positionY) {
         if ((this.vitesseX + positionX) <= this.vitesseMaxX && (this.vitesseX+positionX) >= this.vitesseMaxX *(-1)){
             this.vitesseX = this.vitesseX + positionX;
         }
@@ -143,7 +137,8 @@ public class Entite {
         this.vitesseY = this.vitesseY + positionY;
     }
 
-    public Rectangle2D surQuelBloc(Niveau niveau){
+    /** Renvoie le " bloc " (Rectangle2D uniquement) sur lequel se trouve le personnage */
+    protected Rectangle2D surQuelBloc(Niveau niveau){
         setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
         for (int i = 0; i < niveau.getListeBlocs().size();i++) {
             if (this.typeHitBox("Pied").intersects(niveau.getListeBlocs().get(i).getBloc())) {
@@ -153,16 +148,15 @@ public class Entite {
         return niveau.getListeBlocs().get(0).getBloc();
     }
 
-    public double ecartPlateforme(Niveau niveau){
+    /** Renvoie la valeur d'écart entre le bloc de dessous et le personnage*/
+    protected double ecartPlateforme(Niveau niveau){
         setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
         for (int i = 0; i < niveau.getListeBlocs().size();i++) {
-            if (niveau.getListeBlocs().get(i).getBloc().contains(this.getPositionX(),635)){
+            if (niveau.getListeBlocs().get(i).getBloc().contains(this.getPositionX(),niveau.getListeBlocs().get(i).getBloc().getMinY())){
                 return (this.hitBox.getMaxY() - niveau.getListeBlocs().get(i).getBloc().getMinY());
             }
         }
         return 0;
-
-
     }
 
 }

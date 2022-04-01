@@ -1,4 +1,3 @@
-import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -7,102 +6,70 @@ import java.util.ArrayList;
 
 public class Niveau {
     private static final Image fondEcran = new Image("2224.png");
-    private ArrayList <BlocsDeConstruction> listeBlocs;
-    private Personnage perso;
-
-
-
-    public static Image getFondEcran() {
-        return fondEcran;
-    }
+    private ArrayList <BlocsDeConstruction> listeBlocs; // Liste des blocs dans un niveau
+    private final Personnage perso;
 
     public Niveau(Personnage perso){
         this.perso = perso;
         }
 
-    public Niveau(){
-        }
-
-    public void setPerso(Personnage perso) {
-        this.perso = perso;
-    }
-
-
-    /** Getter pour la liste des blocs dans un niveau */
     public ArrayList<BlocsDeConstruction> getListeBlocs() {
         return listeBlocs;
     }
 
-    public Personnage getPerso() {
-        return perso;
+    /** Permet de construire une " plateforme ",
+     * avec un bloc de début, un certain nombre de blocs au total et un bloc de fin.*/
+    private ArrayList<BlocsDeConstruction> constrPlateformes(int positionX, int positionY, int nombreBlocs){
+        ArrayList <BlocsDeConstruction> listeBlocsPlateforme = new ArrayList<>();
+        int intervalle = 33;
+        listeBlocsPlateforme.add(new BlocsDeConstruction("Bloc1", intervalle *positionX,positionY));
+        for (int i = 0; i < nombreBlocs-3; i++){
+            listeBlocsPlateforme.add(new BlocsDeConstruction("Bloc3", intervalle * (positionX+1+i),positionY));
+        }
+        listeBlocsPlateforme.add(new BlocsDeConstruction("Bloc2", intervalle * (positionX + nombreBlocs-2),positionY-1));
+        return listeBlocsPlateforme;
     }
-
 
     /** Construction du niveau 1
      * avec placement des blocs
      * et placement du personnage
      */
     public void constructionPremierNiveau() {
-
         // Mise en place des blocs en les ajoutant dans la liste des blocs
         this.listeBlocs = new ArrayList<>();
-        int intervalle = 33;
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",0,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*2,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*3,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*4,629));
+        this.listeBlocs.addAll(constrPlateformes(0,630,5));
+        this.listeBlocs.addAll(constrPlateformes(10,630,8));
 
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",intervalle*7,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*8,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*9,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*10,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*11,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*12,629));
+        this.listeBlocs.addAll(constrPlateformes(6,520,4));
 
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc1",intervalle*16,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*17,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*18,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*19,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*20,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*21,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*22,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*23,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*24,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*25,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*26,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*27,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*28,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*29,629,true));
+        this.listeBlocs.addAll(constrPlateformes(20,630,13));
+
+        this.listeBlocs.get(this.listeBlocs.size()-1).setEstUnBlocDeFin(true); // Le dernier bloc ajouté à la liste est le bloc de fin
 
         this.perso.setPositionX(20);
         this.perso.setPositionY(450);
-
-
     }
+
 
     /** Permet de dessiner le niveau en fonction de la position du personnage
      * Les blocs sont dans une liste associée au niveau et cette liste est récupérée pour redessiner le niveau.*/
-    public void drawNiveau(Canvas canvasPremierNiveau,  double X, double Y){
-        GraphicsContext gcDraw = canvasPremierNiveau.getGraphicsContext2D();
+    public void drawNiveau(Canvas canvasNiveau,  double X, double Y){
+        GraphicsContext gcDraw = canvasNiveau.getGraphicsContext2D();
 
         gcDraw.drawImage(fondEcran, 0, 0,1000,650);
 
-        for (int i = 0 ; i < this.listeBlocs.size() ; i++){
-            gcDraw.drawImage(this.listeBlocs.get(i).getSkin(),this.listeBlocs.get(i).getBloc().getMinX(),this.listeBlocs.get(i).getBloc().getMinY());
+        // Boucle qui passe en revue tous les blocs de la liste et les dessine
+        for (BlocsDeConstruction listeBloc : this.listeBlocs) {
+            gcDraw.drawImage(listeBloc.getSkin(), listeBloc.getBloc().getMinX(), listeBloc.getBloc().getMinY());
         }
 
         Image [] listeAChoisir;
-        if (perso.getVitesseX() == 0 /*&& perso.getVitesseY() == 0*/){
+        // Selon la vitesse horizontale du personnage, on change quelle liste d'animation est choisie
+        if (perso.getVitesseX() == 0){
             listeAChoisir = this.perso.listeImageIdle;
         }
         else {listeAChoisir = this.perso.listeImageRun;}
 
         gcDraw.drawImage(this.perso.getFrame(listeAChoisir),X,Y);
-
-
     }
-
-
-
 }

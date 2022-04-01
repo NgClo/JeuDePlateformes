@@ -1,14 +1,16 @@
 import javafx.scene.Scene;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-
+import javafx.scene.text.Font;
 import java.util.ArrayList;
+import java.util.Objects;
 
-/** La construction de la classe scene nécessite des boutons
+/** La construction de l'objet de la classe Graphique nécessite des boutons
  * Les boutons sont ajoutés dans une ArrayList */
-public class Scenes {
+public class Graphique {
     ArrayList<Button> buttonList;
 
     /** Création de boutons
@@ -24,8 +26,11 @@ public class Scenes {
         return button;
     }
 
-    public Scenes (ArrayList<Button> buttonList){
+    public Graphique (ArrayList<Button> buttonList){
         this.buttonList = buttonList;
+    }
+
+    public Graphique (){
     }
 
     /** Construction du menu de démarrage
@@ -50,6 +55,26 @@ public class Scenes {
         rootMenu.setBackground(fondEcranMenu);
 
         return sceneMenu;
+    }
+
+    /** Dessine un rectangle vert affichant un texte
+     * String situation : cas d'une défaite ou d'une victoire ?
+     * GraphicsContext gcNiveau : quel gc à utiliser pour dessiner*/
+    public void dessinerRectangleInfo(String situation, GraphicsContext gcNiveau){
+        gcNiveau.setFill(Color.BLACK);
+        gcNiveau.fillRect(95,195,810,210);
+        gcNiveau.setFill(Color.LIGHTGREEN);
+        gcNiveau.fillRect(100,200,800,200);
+        gcNiveau.setFill(Color.BLACK);
+        gcNiveau.setFont(Font.font(40));
+        if (Objects.equals(situation, "GAME OVER")){
+            gcNiveau.fillText("GAME OVER - Pour rejouer, tapez 'R'.",200,280);
+        }
+        if (Objects.equals(situation, "VICTOIRE")){
+            gcNiveau.fillText("Félicitations ! Pour rejouer, tapez 'R'.",200,280);
+        }
+
+        gcNiveau.fillText("Pour revenir au menu, tapez 'M'.",200,350);
     }
 
 }
