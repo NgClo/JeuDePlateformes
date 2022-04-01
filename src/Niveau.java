@@ -1,3 +1,4 @@
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -71,7 +72,8 @@ public class Niveau {
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*25,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*26,630));
         this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*27,630));
-        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*28,629));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc3",intervalle*28,630));
+        this.listeBlocs.add(new BlocsDeConstruction("Bloc2",intervalle*29,629,true));
 
         this.perso.setPositionX(20);
         this.perso.setPositionY(450);
@@ -90,7 +92,13 @@ public class Niveau {
             gcDraw.drawImage(this.listeBlocs.get(i).getSkin(),this.listeBlocs.get(i).getBloc().getMinX(),this.listeBlocs.get(i).getBloc().getMinY());
         }
 
-        gcDraw.drawImage(this.perso.getImage(),X,Y);
+        Image [] listeAChoisir;
+        if (perso.getVitesseX() == 0 /*&& perso.getVitesseY() == 0*/){
+            listeAChoisir = this.perso.listeImageIdle;
+        }
+        else {listeAChoisir = this.perso.listeImageRun;}
+
+        gcDraw.drawImage(this.perso.getFrame(listeAChoisir),X,Y);
 
 
     }

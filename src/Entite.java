@@ -4,7 +4,6 @@ import javafx.scene.image.Image;
 public class Entite {
 
     private Rectangle2D hitBox;
-    private Image image;
     protected double positionX = 25;
     protected double positionY = 520;
     protected double vitesseX;
@@ -13,8 +12,19 @@ public class Entite {
     boolean tombeMoinsUn = true;
     protected double vitesseMaxX = 9;
     protected double vitesseMinY = 9;
+    protected Image []listeImageIdle;
+    protected Image[] listeImageRun;
+    protected int countImageIdle;
+    protected int countImageRun;
 
 
+
+    protected void setCountImageIdle(int countImage) {
+        this.countImageIdle = countImage;
+    }
+    protected void setCountImageRun(int countImage) {
+        this.countImageRun = countImage;
+    }
 
 
     protected Entite() {
@@ -36,10 +46,6 @@ public class Entite {
         this.tombeMoinsUn = tombeMoinsUn;
     }
 
-    public Image getImage() {
-        return image;
-    }
-
     public double getPositionY() {
         return positionY;
     }
@@ -52,7 +58,7 @@ public class Entite {
         return hitBox;
     }
 
-    private void setHitBox(Rectangle2D hitBox) {
+    protected void setHitBox(Rectangle2D hitBox) {
         this.hitBox = hitBox;
     }
 
@@ -76,12 +82,11 @@ public class Entite {
      * La chute s'arrête s'il atteint les blocs*/
     public boolean gravite(Niveau niveau){
         if(this.estSurUnBloc(niveau) == false){
-            this.addVitesse(0,1);
+            this.addVitesse(0,0.2);
             this.setPositionX(getPositionX()+this.vitesseX);
             this.setPositionY(getPositionY()+this.vitesseY);
             return true;
         }
-        this.resetVitesse();
         return false;
     }
 
@@ -116,7 +121,7 @@ public class Entite {
     protected Rectangle2D typeHitBox(String typeHitBox){
         Rectangle2D correctHitBox;
         if (typeHitBox == "Pied"){
-            correctHitBox = new Rectangle2D(this.hitBox.getMinX()+16,this.hitBox.getMinY()+52,33,1);
+            correctHitBox = new Rectangle2D(this.hitBox.getMinX()+20,this.hitBox.getMinY()+45,10,5);
             return correctHitBox;
         }
         return this.hitBox;
@@ -130,13 +135,34 @@ public class Entite {
 
     /** Mise à jour de la vitesse*/
     public void addVitesse(double positionX, double positionY) {
-        if ((this.vitesseX + positionX) <= this.vitesseMaxX){
+        if ((this.vitesseX + positionX) <= this.vitesseMaxX && (this.vitesseX+positionX) >= this.vitesseMaxX *(-1)){
             this.vitesseX = this.vitesseX + positionX;
-
         }
 
-        if ((this.vitesseY + positionY) <= 420)
+        if ((this.vitesseY + positionY) <= this.vitesseMinY && (this.vitesseY + positionY) >= this.vitesseMinY * (-1))
         this.vitesseY = this.vitesseY + positionY;
+    }
+
+    public Rectangle2D surQuelBloc(Niveau niveau){
+        setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
+        for (int i = 0; i < niveau.getListeBlocs().size();i++) {
+            if (this.typeHitBox("Pied").intersects(niveau.getListeBlocs().get(i).getBloc())) {
+                return niveau.getListeBlocs().get(i).getBloc();
+            }
+        }
+        return niveau.getListeBlocs().get(0).getBloc();
+    }
+
+    public double ecartPlateforme(Niveau niveau){
+        setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
+        for (int i = 0; i < niveau.getListeBlocs().size();i++) {
+            if (niveau.getListeBlocs().get(i).getBloc().contains(this.getPositionX(),635)){
+                return (this.hitBox.getMaxY() - niveau.getListeBlocs().get(i).getBloc().getMinY());
+            }
+        }
+        return 0;
+
+
     }
 
 }

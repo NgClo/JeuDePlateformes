@@ -13,87 +13,67 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 
 import static javafx.scene.input.KeyCode.D;
 
-
 public class Launch extends Application {
-
-    /** Création des boutons dans le menu principal.*/
-    private Button createButton(String buttonName, int translation, StackPane root){
-        Button button = new Button();
-        button.setText(buttonName);
-        button.setTranslateY(translation);
-        button.setBackground(Background.fill(Color.LIGHTGREEN));
-        root.getChildren().add(button);
-        return button;
-    }
 
     public void start(Stage primaryStage){
 
-        // Création du panneau
-        StackPane rootMenu = new StackPane();
+        // Creation de la scene du menu
+        ArrayList<Button> listButton = new ArrayList<>();
+        Scenes scenesMenu = new Scenes(listButton);
+        Scene scene;
+        scene = scenesMenu.constructionMenu();
 
-        // Création des 3 boutons du menu et association au panneau
-        Button Start = createButton("Start",-150,rootMenu);
-        Button HighScore = createButton("Highscore",0,rootMenu);
-        Button Exit = createButton("Exit",150,rootMenu);
-
-        // Création de l'image de fond et association de cette image au fond d'écran
-        Image imageMenu = new Image("beach.png");
-        BackgroundImage fondEcranMenuImage = new BackgroundImage(imageMenu, BackgroundRepeat.NO_REPEAT,
-                BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-        Background fondEcranMenu = new Background(fondEcranMenuImage);
-
-        // Association du fond d'écran au panneau
-        rootMenu.setBackground(fondEcranMenu);
-
-        // Creation de la scene et association du panneau à cette scene
-        Scene scene = new Scene(rootMenu, 1000,650);
-
-        // Nom de la fenêtre
+        // Affichage de la scène du menu
         primaryStage.setTitle("Jeu de plateformes");
-
-        // La scene qui contient le menu est mis dans la fenêtre et la fenêtre est affichée
         primaryStage.setScene(scene);
         primaryStage.show();
 
 
-        // Association d'évènements aux boutons
+        // Association d'évènements aux boutons du menu
         // Le bouton Start affecte à la fenêtre la scene contenant le premier niveau
-        Start.setOnAction(new EventHandler<ActionEvent>() {
+        scenesMenu.buttonList.get(0).setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-
-                Canvas canvasPremierNiveau = new Canvas(1000, 650);
-                GraphicsContext gcNiveau = canvasPremierNiveau.getGraphicsContext2D();
-                rootMenu.getChildren().add(canvasPremierNiveau);
+                StackPane rootNiveau = new StackPane(); // Creation du panneau pour les niveaux
+                Canvas canvasNiveau = new Canvas(1000, 650); // Creation du canvas
+                GraphicsContext gcNiveau = canvasNiveau.getGraphicsContext2D(); // Creation du GraphicsContext
+                rootNiveau.getChildren().add(canvasNiveau); // Association du canvas au niveau
+                Scene sceneNiveau = new Scene(rootNiveau,1000,650); // Creation d'une scène pour les niveaux avec un panneau associé
+                primaryStage.setScene(sceneNiveau); // On place la scene du niveau dans la fenêtre
 
                 Personnage perso = new Personnage(); // Construction du personnage
-                Niveau premierNiveau = new Niveau(perso); // Construction d'un niveau
+                // Chargement des frames du personnage
+                perso.setListeImageIdleDino();
+                perso.setListImageRunDino();
+
+                Niveau premierNiveau = new Niveau(perso); // Creation du premier niveau avec association du personnage au niveau
                 premierNiveau.constructionPremierNiveau(); // Construction du premier niveau
 
-                premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY()); // Dessine le premier niveau
+                premierNiveau.drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY()); // Dessine le premier niveau
 
-                System.out.println("TestBoutonStart");
-
-
+                // Debut de la boucle
                 final long startNanoTime = System.nanoTime();
                 new AnimationTimer() {
                     @Override
                     public void handle(long l) {
                         double t = (l - startNanoTime) / 1000000000.0;
 
-                        // Récupère les touches clickées et permet le mouvement
+                        // Récupère les touches clickées : permet le mouvement, retour au menu et quitter le jeu
                         primaryStage.getScene().setOnKeyPressed(e->{
-                            if (e.getCode() == D){
-                                System.out.println("Lettre D clické");
-                            }
-                            if (e.getCode() == KeyCode.ESCAPE){
+                            if (e.getCode() == KeyCode.ESCAPE){ // Fermeture du programme
                                 primaryStage.close();
                             }
                             if (e.getCode() == KeyCode.Z){
                                 System.out.println("Lettre Z clické");
+                            }
+
+                            if (e.getCode() == KeyCode.M){
+                                primaryStage.setScene(scene);
+                                this.stop();
                             }
                             KeyCode input = e.getCode();
                             perso.deplacePerso(input, premierNiveau);
@@ -128,42 +108,64 @@ public class Launch extends Application {
                         }
                         perso.setTombeMoinsUn(perso.gravite(premierNiveau));
 
+                        if (perso.ecartPlateforme(premierNiveau) > 10 && perso.ecartPlateforme(premierNiveau) < 26)
+                            perso.setPositionY(perso.surQuelBloc(premierNiveau).getMinY()-50);
+                            //perso.setPositionY(630);
 
-                        premierNiveau.drawNiveau(canvasPremierNiveau, perso.getPositionX(), perso.getPositionY());
+
+                        premierNiveau.drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY());
 
 
                         if (perso.getPositionY() > 1000){ // Le personnage tombe
                             System.out.println("Perdu !");
+                            perso.resetVitesse();
                             this.stop();
-                            gcNiveau.rect(100,200,400,200);
+                            gcNiveau.setFill(Color.BLACK);
+                            gcNiveau.fillRect(95,195,810,210);
                             gcNiveau.setFill(Color.LIGHTGREEN);
                             gcNiveau.fillRect(100,200,800,200);
                             gcNiveau.setFill(Color.BLACK);
                             gcNiveau.setFont(Font.font(40));
-                            gcNiveau.fillText("Pour rejouer, tapez 'R'.",300,300);
+                            gcNiveau.fillText("GAME OVER - Pour rejouer, tapez 'R'.",200,300);
                             primaryStage.getScene().setOnKeyPressed(e->{ // Possibilité de rejouer
                                 if (e.getCode() == KeyCode.R){
                                     perso.deplacePerso(e.getCode(), premierNiveau);
                                     this.start();
                                 }
                             });
+                        }
 
-
-                            }
+                        if (perso.remporteNiveau(premierNiveau)){
+                            System.out.println("Gagné !");
+                            this.stop();
+                            gcNiveau.setFill(Color.BLACK);
+                            gcNiveau.fillRect(95,195,810,210);
+                            gcNiveau.setFill(Color.LIGHTGREEN);
+                            gcNiveau.fillRect(100,200,800,200);
+                            gcNiveau.setFill(Color.BLACK);
+                            gcNiveau.setFont(Font.font(40));
+                            gcNiveau.fillText("Félicitations ! Pour rejouer, tapez 'R'.",200,300);
+                            primaryStage.getScene().setOnKeyPressed(e->{ // Possibilité de rejouer
+                                if (e.getCode() == KeyCode.R){
+                                    perso.deplacePerso(e.getCode(), premierNiveau);
+                                    this.start();
+                                }
+                            });
+                        }
 
                     }
                 }.start();
             }
         });
 
-        HighScore.setOnAction(new EventHandler<ActionEvent>() {
+        scenesMenu.buttonList.get(1).setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 System.out.println("TestBoutonHighScore");
             }
         });
 
-        Exit.setOnAction(new EventHandler<ActionEvent>() {
+        scenesMenu.buttonList.get(2).setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 primaryStage.close();
