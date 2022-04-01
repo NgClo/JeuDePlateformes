@@ -44,6 +44,8 @@ public class Launch extends Application {
                 // Chargement des frames du personnage
                 perso.setListeImageIdleDino();
                 perso.setListImageRunDino();
+                perso.setListImageRunDinoR();
+
 
                 Niveau premierNiveau = new Niveau(perso); // Creation du premier niveau avec association du personnage au niveau
                 premierNiveau.constructionPremierNiveau(); // Construction du premier niveau
@@ -84,6 +86,8 @@ public class Launch extends Application {
                         // Reajuste la position du personnage si le personnage atteri DANS la plateforme
                         if (perso.ecartPlateforme(premierNiveau) > 10 && perso.ecartPlateforme(premierNiveau) < 26)
                             perso.setPositionY(perso.surQuelBloc(premierNiveau).getMinY() - 50);
+
+                        premierNiveau.bordNiveau();
 
                         // Redessine le niveau et le personnage
                         premierNiveau.drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY());

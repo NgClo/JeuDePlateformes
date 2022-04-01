@@ -99,6 +99,44 @@ public class Personnage extends Entite {
         this.listeImageRun = listeImageRun;
     }
 
+    public void setListImageRunDinoR(){
+        Image [] listeImageRunR= new Image[32];
+        listeImageRunR[0] = new Image ("SpriteDinoCorrige/Run/Run_1R.png",50,50,false, false);
+        listeImageRunR[1] = listeImageRunR[0];
+        listeImageRunR[2] = listeImageRunR[0];
+        listeImageRunR[3] = listeImageRunR[0];
+        listeImageRunR[4] = new Image ("SpriteDinoCorrige/Run/Run_2R.png",50,50,false, false);
+        listeImageRunR[5] = listeImageRunR[4];
+        listeImageRunR[6] = listeImageRunR[4];
+        listeImageRunR[7] = listeImageRunR[4];
+        listeImageRunR[8] = new Image ("SpriteDinoCorrige/Run/Run_3R.png",50,50,false, false);
+        listeImageRunR[9] = listeImageRunR[8];
+        listeImageRunR[10] = listeImageRunR[8];
+        listeImageRunR[11] = listeImageRunR[8];
+        listeImageRunR[12] = new Image ("SpriteDinoCorrige/Run/Run_4R.png",50,50,false, false);
+        listeImageRunR[13] = listeImageRunR[12];
+        listeImageRunR[14] = listeImageRunR[12];
+        listeImageRunR[15] = listeImageRunR[12];
+        listeImageRunR[16] = new Image ("SpriteDinoCorrige/Run/Run_5R.png",50,50,false, false);
+        listeImageRunR[17] = listeImageRunR[16];
+        listeImageRunR[18] = listeImageRunR[16];
+        listeImageRunR[19] = listeImageRunR[16];
+        listeImageRunR[20] = new Image ("SpriteDinoCorrige/Run/Run_6R.png",50,50,false, false);
+        listeImageRunR[21] = listeImageRunR[20];
+        listeImageRunR[22] = listeImageRunR[20];
+        listeImageRunR[23] = listeImageRunR[20];
+        listeImageRunR[24] = new Image ("SpriteDinoCorrige/Run/Run_7R.png",50,50,false, false);
+        listeImageRunR[25] = listeImageRunR[24];
+        listeImageRunR[26] = listeImageRunR[24];
+        listeImageRunR[27] = listeImageRunR[24];
+        listeImageRunR[28] = new Image ("SpriteDinoCorrige/Run/Run_8R.png",50,50,false, false);
+        listeImageRunR[29] = listeImageRunR[28];
+        listeImageRunR[30] = listeImageRunR[28];
+        listeImageRunR[31] = listeImageRunR[28];
+
+        this.listeImageRunR = listeImageRunR;
+    }
+
     protected Image getFrame(Image[] listeImage){
         Image imageRetourne;
         if (listeImage == this.listeImageIdle){
@@ -107,6 +145,14 @@ public class Personnage extends Entite {
                 setCountImageIdle(this.countImageIdle+1);
             }
             else setCountImageIdle(0);
+        }
+
+        else if (listeImage == this.listeImageRunR){
+            imageRetourne = listeImage[this.countImageRunR];
+            if (this.countImageRunR < (listeImage.length-1)){
+                setCountImageRunR(this.countImageRunR+1);
+            }
+            else setCountImageRunR(0);
         }
         else{
             imageRetourne = listeImage[this.countImageRun];
@@ -151,9 +197,8 @@ public class Personnage extends Entite {
             this.addVitesse(-getVitesseX(),0);
         }
         if (keycode == KeyCode.Q){
-            this.addVitesse(+getVitesseX(),0);
+            this.addVitesse(-getVitesseX(),0);
         }
-
         setPositionX(getPositionX()+this.vitesseX);
         setPositionY(getPositionY()+this.vitesseY);
     }
@@ -171,4 +216,5 @@ public class Personnage extends Entite {
             }
         return false;
     }
+
 }

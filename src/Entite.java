@@ -16,8 +16,11 @@ public class Entite {
     protected double vitesseMinY = 9;
     protected Image []listeImageIdle;
     protected Image[] listeImageRun;
+    protected Image[] listeImageRunR;
     protected int countImageIdle;
     protected int countImageRun;
+    protected int countImageRunR;
+
 
     protected void setCountImageIdle(int countImage) {
         this.countImageIdle = countImage;
@@ -25,6 +28,7 @@ public class Entite {
     protected void setCountImageRun(int countImage) {
         this.countImageRun = countImage;
     }
+    protected void setCountImageRunR(int countImageRunR) { this.countImageRunR = countImageRunR;}
 
     protected Entite() {
         this.hitBox = new Rectangle2D(positionX, positionY, 50,53);
