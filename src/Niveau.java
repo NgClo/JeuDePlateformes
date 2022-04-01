@@ -37,8 +37,7 @@ public class Niveau {
     /**
      * Construction du niveau 1
      * avec placement des blocs
-     * et placement du personnage
-     */
+     * et placement du personnage */
     public void constructionPremierNiveau() {
         // Mise en place des blocs en les ajoutant dans la liste des blocs
         this.listeBlocs = new ArrayList<>();
@@ -53,44 +52,34 @@ public class Niveau {
 
         this.listeBlocs.addAll(constrPlateformes(58, 550, 10));
 
-
         this.listeBlocs.addAll(constrPlateformes(88, 580, 30));
-
 
         int emplacementDernierBloc = this.listeBlocs.size() - 1;
 
         this.debutNiveau = this.listeBlocs.get(0).getBloc().getMinX();
         this.finNiveau = this.listeBlocs.get(emplacementDernierBloc).getBloc().getMaxX();
 
-
-        this.listeBlocs.get(emplacementDernierBloc).setEstUnBlocDeFin(true); // Pour ce niveau, le dernier bloc ajouté à la liste est le bloc de fin
+        // Pour ce niveau, le dernier bloc ajouté à la liste est le bloc de fin
+        this.listeBlocs.get(emplacementDernierBloc).setEstUnBlocDeFin(true);
 
         this.perso.setPositionX(20);
         this.perso.setPositionY(450);
     }
 
-
-    /**
-     * Permet de dessiner le niveau en fonction de la position du personnage, avec scrolling
+    /**Permet de dessiner le niveau en fonction de la position du personnage, avec scrolling
      * Les blocs sont dans une liste associée au niveau et cette liste est récupérée pour redessiner le niveau.
      * Dans un premier temps, le fond est dessiné
      * Dans un second temps, les blocs sont dessinés selon la position du personnage
-     * Dans un troisième temps, le personnage est dessiné selon sa position et la direction dans laquelle il se dirige.
-     */
+     * Dans un troisième temps, le personnage est dessiné selon sa position et la direction dans laquelle il se dirige.*/
     public void drawNiveau(Canvas canvasNiveau, double X, double Y) {
         GraphicsContext gcDraw = canvasNiveau.getGraphicsContext2D();
 
         gcDraw.drawImage(fondEcran, 0, 0, 1000, 650);
         Image[] listeAChoisir;
         // Selon la vitesse horizontale du personnage, on change quelle liste d'animation est choisie
-        if (perso.getVitesseX() == 0) {
-            listeAChoisir = this.perso.listeImageIdle;
-        } else if (perso.getVitesseX() > 0){
-            listeAChoisir = this.perso.listeImageRun;
-        }
-        else {
-            listeAChoisir = this.perso.listeImageRunR;
-        }
+        if (perso.getVitesseX() == 0) listeAChoisir = this.perso.listeImageIdle;
+        else if (perso.getVitesseX() > 0) listeAChoisir = this.perso.listeImageRun;
+        else listeAChoisir = this.perso.listeImageRunR;
 
         if (X < 500){
             // Boucle qui passe en revue tous les blocs de la liste et les dessine
@@ -98,7 +87,6 @@ public class Niveau {
                 gcDraw.drawImage(listeBloc.getSkin(), listeBloc.getBloc().getMinX(), listeBloc.getBloc().getMinY());
             }
             gcDraw.drawImage(this.perso.getFrame(listeAChoisir), X, Y);
-
         }
         else if (X > (this.finNiveau - 500)){
             for (BlocsDeConstruction listeBloc : this.listeBlocs) {
@@ -119,13 +107,13 @@ public class Niveau {
     }
     /** Permet de ne pas dépasser le début et la fin du niveau*/
     public void bordNiveau(){
-            if (perso.getPositionX() < debutNiveau){
-                perso.resetVitesse();
-                perso.addVitesse(2,0);
-            }
-            if (perso.getPositionX() > finNiveau){
-                perso.resetVitesse();
-                perso.addVitesse(-2,0);
-            }
+        if (perso.getPositionX() < debutNiveau){
+            perso.resetVitesse();
+            perso.addVitesse(2,0);
+        }
+        if (perso.getPositionX() > finNiveau){
+            perso.resetVitesse();
+            perso.addVitesse(-2,0);
+        }
     }
 }

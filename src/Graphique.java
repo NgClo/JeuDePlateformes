@@ -76,5 +76,4 @@ public class Graphique {
 
         gcNiveau.fillText("Pour revenir au menu, tapez 'M'.",200,350);
     }
-
 }

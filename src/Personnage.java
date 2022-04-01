@@ -144,24 +144,18 @@ public class Personnage extends Entite {
         Image imageRetourne;
         if (listeImage == this.listeImageIdle){
             imageRetourne = listeImage[this.countImageIdle];
-            if (this.countImageIdle < (listeImage.length-1)){
-                setCountImageIdle(this.countImageIdle+1);
-            }
+            if (this.countImageIdle < (listeImage.length-1)) setCountImageIdle(this.countImageIdle+1);
             else setCountImageIdle(0);
         }
 
         else if (listeImage == this.listeImageRunR){
             imageRetourne = listeImage[this.countImageRunR];
-            if (this.countImageRunR < (listeImage.length-1)){
-                setCountImageRunR(this.countImageRunR+1);
-            }
+            if (this.countImageRunR < (listeImage.length-1)) setCountImageRunR(this.countImageRunR+1);
             else setCountImageRunR(0);
         }
         else{
             imageRetourne = listeImage[this.countImageRun];
-            if (this.countImageRun < (listeImage.length-1)){
-                setCountImageRun(this.countImageRun+1);
-            }
+            if (this.countImageRun < (listeImage.length-1)) setCountImageRun(this.countImageRun+1);
             else setCountImageRun(0);
         }
         return imageRetourne;
@@ -170,12 +164,9 @@ public class Personnage extends Entite {
 
     /** Selon la touche sur laquelle on appuie, on applique une certaine vitesse*/
     protected void deplacePerso(KeyCode keycode, Niveau niveau){
-        if (keycode == KeyCode.D){
-            this.addVitesse(4,0); // Ajout d'une vitesse vers la droite
-        }
-        if (keycode == KeyCode.Q){
-            this.addVitesse(-4,0); // Ajout d'une vitesse vers la gauche
-        }
+        if (keycode == KeyCode.D) this.addVitesse(4,0); // Ajout d'une vitesse vers la droite
+
+        if (keycode == KeyCode.Q) this.addVitesse(-4,0); // Ajout d'une vitesse vers la gauche
 
         if (keycode == KeyCode.R){ // Réinitialise la position du personnage
             setPositionX(20);
@@ -196,12 +187,10 @@ public class Personnage extends Entite {
 
     /** Permet de remettre à 0 la vitesse lorsque les touches sont relachées */
     protected void ralentissement (KeyCode keycode){
-        if (keycode == KeyCode.D){
-            this.addVitesse(-getVitesseX(),0);
-        }
-        if (keycode == KeyCode.Q){
-            this.addVitesse(-getVitesseX(),0);
-        }
+        if (keycode == KeyCode.D) this.addVitesse(-getVitesseX(),0);
+
+        if (keycode == KeyCode.Q) this.addVitesse(-getVitesseX(),0);
+
         setPositionX(getPositionX()+this.vitesseX);
         setPositionY(getPositionY()+this.vitesseY);
     }
@@ -212,9 +201,7 @@ public class Personnage extends Entite {
         setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
             for (int i = 0; i < niveau.getListeBlocs().size();i++){
                 if (this.typeHitBox("Pied").intersects(niveau.getListeBlocs().get(i).getBloc())){
-                    if(niveau.getListeBlocs().get(i).getestUnBlocDeFin()){
-                            return true;
-                    }
+                    if(niveau.getListeBlocs().get(i).getestUnBlocDeFin()) return true;
                 }
             }
         return false;

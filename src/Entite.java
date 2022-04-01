@@ -14,13 +14,12 @@ public class Entite {
     boolean tombeMoinsUn = true;
     protected double vitesseMaxX = 9;
     protected double vitesseMinY = 9;
-    protected Image []listeImageIdle;
+    protected Image[] listeImageIdle;
     protected Image[] listeImageRun;
     protected Image[] listeImageRunR;
     protected int countImageIdle;
     protected int countImageRun;
     protected int countImageRunR;
-
 
     protected void setCountImageIdle(int countImage) {
         this.countImageIdle = countImage;
@@ -108,9 +107,7 @@ public class Entite {
         setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
         boolean estSurUnBloc = false;
         for (int i = 0; i < niveau.getListeBlocs().size();i++){
-            if (this.typeHitBox("Pied").intersects(niveau.getListeBlocs().get(i).getBloc())){
-                estSurUnBloc = true;
-            }
+            if (this.typeHitBox("Pied").intersects(niveau.getListeBlocs().get(i).getBloc())) estSurUnBloc = true;
         }
         return estSurUnBloc;
     }
@@ -163,5 +160,4 @@ public class Entite {
         }
         return 0;
     }
-
 }
