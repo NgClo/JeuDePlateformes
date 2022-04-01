@@ -116,7 +116,7 @@ public class Entite {
     }
 
     /** A partir de la hitBox de base, retourne une plus petite zone de cette hitbox.
-     * D'autres types seront ajoutés selon les besoins. */
+     * D'autres types seront ajoutés selon les besoins, notamment pour la hitbox avec les ennemis. */
     protected Rectangle2D typeHitBox(String typeHitBox){
         Rectangle2D correctHitBox;
         if (Objects.equals(typeHitBox, "Pied")){

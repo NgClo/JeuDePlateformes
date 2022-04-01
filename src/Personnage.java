@@ -60,7 +60,7 @@ public class Personnage extends Entite {
 
         this.listeImageIdle = listeImageIdle;
     }
-
+    /** Creation de la liste d'image lorsque le personne se déplace vers la droite.*/
     public void setListImageRunDino(){
         Image [] listeImageRun= new Image[32];
         listeImageRun[0] = new Image ("SpriteDinoCorrige/Run/Run_1.png",50,50,false, false);
@@ -99,6 +99,7 @@ public class Personnage extends Entite {
         this.listeImageRun = listeImageRun;
     }
 
+    /** Creation de la liste d'image lorsque le personne se déplace vers la gauche.*/
     public void setListImageRunDinoR(){
         Image [] listeImageRunR= new Image[32];
         listeImageRunR[0] = new Image ("SpriteDinoCorrige/Run/Run_1R.png",50,50,false, false);
@@ -137,6 +138,8 @@ public class Personnage extends Entite {
         this.listeImageRunR = listeImageRunR;
     }
 
+    /** Méthode appelée à chaque boucle de l'animation
+     * Image renvoyée en fonction de la liste et du compteur d'image*/
     protected Image getFrame(Image[] listeImage){
         Image imageRetourne;
         if (listeImage == this.listeImageIdle){

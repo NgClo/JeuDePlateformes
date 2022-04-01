@@ -15,14 +15,6 @@ public class Niveau {
         this.perso = perso;
     }
 
-    private void setDebutNiveau(double debutNiveau) {
-        this.debutNiveau = debutNiveau;
-    }
-
-    private void setFinNiveau(double finNiveau) {
-        this.finNiveau = finNiveau;
-    }
-
     public ArrayList<BlocsDeConstruction> getListeBlocs() {
         return listeBlocs;
     }
@@ -57,7 +49,10 @@ public class Niveau {
 
         this.listeBlocs.addAll(constrPlateformes(20, 630, 30));
 
-        this.listeBlocs.addAll(constrPlateformes(54, 630, 30));
+        this.listeBlocs.addAll(constrPlateformes(73, 500, 10));
+
+        this.listeBlocs.addAll(constrPlateformes(58, 550, 10));
+
 
         this.listeBlocs.addAll(constrPlateformes(88, 580, 30));
 
@@ -80,7 +75,7 @@ public class Niveau {
      * Les blocs sont dans une liste associée au niveau et cette liste est récupérée pour redessiner le niveau.
      * Dans un premier temps, le fond est dessiné
      * Dans un second temps, les blocs sont dessinés selon la position du personnage
-     * Dans un troisième temps, le personnage est dessiné selon sa position.
+     * Dans un troisième temps, le personnage est dessiné selon sa position et la direction dans laquelle il se dirige.
      */
     public void drawNiveau(Canvas canvasNiveau, double X, double Y) {
         GraphicsContext gcDraw = canvasNiveau.getGraphicsContext2D();

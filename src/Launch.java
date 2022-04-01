@@ -27,7 +27,6 @@ public class Launch extends Application {
         primaryStage.setScene(sceneMenu);
         primaryStage.show();
 
-
         // Association d'évènements aux boutons du menu
         // Le bouton Start affecte à la fenêtre la scene contenant le premier niveau
         scenesMenu.buttonList.get(0).setOnAction(new EventHandler<>() {
@@ -45,7 +44,6 @@ public class Launch extends Application {
                 perso.setListeImageIdleDino();
                 perso.setListImageRunDino();
                 perso.setListImageRunDinoR();
-
 
                 Niveau premierNiveau = new Niveau(perso); // Creation du premier niveau avec association du personnage au niveau
                 premierNiveau.constructionPremierNiveau(); // Construction du premier niveau
@@ -127,14 +125,11 @@ public class Launch extends Application {
                                 }
                             });
                         }
-
                     }
                 }.start();
             }
         });
-
         scenesMenu.buttonList.get(1).setOnAction(actionEvent -> System.out.println("TestBoutonHighScore"));
-
         scenesMenu.buttonList.get(2).setOnAction(actionEvent -> primaryStage.close());
     }
 }
