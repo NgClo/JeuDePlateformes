@@ -1,6 +1,11 @@
+import javafx.animation.AnimationTimer;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.stage.Stage;
+
 import java.util.ArrayList;
 
 
@@ -10,10 +15,18 @@ public class Niveau {
     private final Personnage perso;
     private double debutNiveau;
     private double finNiveau;
+    static private int numeroNiveauActuel = 1;
+    final static private int totalNiveaux = 2;
 
     public Niveau(Personnage perso) {
         this.perso = perso;
     }
+
+    public static int getNumeroNiveauActuel() {
+        return numeroNiveauActuel;
+    }
+
+    private void setNumeroNiveauActuel(int numeroNiveau) {numeroNiveauActuel = numeroNiveau;}
 
     public ArrayList<BlocsDeConstruction> getListeBlocs() {
         return listeBlocs;
@@ -38,7 +51,7 @@ public class Niveau {
      * Construction du niveau 1
      * avec placement des blocs
      * et placement du personnage */
-    public void constructionPremierNiveau() {
+    private void constructionPremierNiveau() {
         // Mise en place des blocs en les ajoutant dans la liste des blocs
         this.listeBlocs = new ArrayList<>();
         this.listeBlocs.addAll(constrPlateformes(0, 630, 5));
@@ -47,6 +60,32 @@ public class Niveau {
         this.listeBlocs.addAll(constrPlateformes(6, 520, 4));
 
         this.listeBlocs.addAll(constrPlateformes(20, 630, 30));
+
+        this.listeBlocs.addAll(constrPlateformes(73, 500, 10));
+
+        this.listeBlocs.addAll(constrPlateformes(58, 550, 10));
+
+        this.listeBlocs.addAll(constrPlateformes(88, 580, 30));
+
+        int emplacementDernierBloc = this.listeBlocs.size() - 1;
+
+        this.debutNiveau = this.listeBlocs.get(0).getBloc().getMinX();
+        this.finNiveau = this.listeBlocs.get(emplacementDernierBloc).getBloc().getMaxX();
+
+        // Pour ce niveau, le dernier bloc ajouté à la liste est le bloc de fin
+        this.listeBlocs.get(emplacementDernierBloc).setEstUnBlocDeFin(true);
+
+        this.perso.setPositionX(20);
+        this.perso.setPositionY(450);
+    }
+
+    private void constructionDeuxiemeNiveau(){
+        this.listeBlocs = new ArrayList<>();
+        this.listeBlocs.addAll(constrPlateformes(0, 630, 5));
+
+        this.listeBlocs.addAll(constrPlateformes(6, 520, 4));
+
+        this.listeBlocs.addAll(constrPlateformes(20, 450, 30));
 
         this.listeBlocs.addAll(constrPlateformes(73, 500, 10));
 
@@ -75,6 +114,7 @@ public class Niveau {
         GraphicsContext gcDraw = canvasNiveau.getGraphicsContext2D();
 
         gcDraw.drawImage(fondEcran, 0, 0, 1000, 650);
+        Graphique.nomNiveau(numeroNiveauActuel,canvasNiveau);
         Image[] listeAChoisir;
         // Selon la vitesse horizontale du personnage, on change quelle liste d'animation est choisie
         if (perso.getVitesseX() == 0) listeAChoisir = this.perso.listeImageIdle;
@@ -115,5 +155,83 @@ public class Niveau {
             perso.resetVitesse();
             perso.addVitesse(-2,0);
         }
+    }
+
+    public void lancementNiveau(int numNiveau, Personnage perso, Canvas canvasNiveau){
+        if (numNiveau == 1){
+            this.constructionPremierNiveau(); // Construction du premier niveau
+            this.drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY()); // premier Niveau dessiné
+        }
+        if (numNiveau == 2){
+            this.constructionDeuxiemeNiveau(); // Construction du premier niveau
+            this.drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY()); // premier Niveau dessiné
+        }
+    }
+
+    /** Remet la vitesse à 0 une fois que le personnage a atteri
+    Si le personnage n'est pas en train de tomber mais qu'il tombait à la boucle précédent
+    Alors la vitesse est remise à O.*/
+    public void resetVitesseApresChute(Personnage perso){
+        perso.setTombe(perso.gravite(this));
+        if (!perso.getTombe()) {
+            if (perso.getTombeMoinsUn()) {
+                perso.resetVitesse();
+            }
+        }
+        perso.setTombeMoinsUn(perso.gravite(this));
+    }
+
+    /** Cas où le personnage tombe = GAME OVER
+       Avec possibilité de rejouer ou de revenir au menu*/
+    public void mortPerso(Personnage perso, AnimationTimer aT, Stage stage, Canvas canvasNiveau, Scene sceneMenu){
+        if (perso.getPositionY() > 1000) { // Le personnage tombe
+            perso.resetVitesse();
+            aT.stop();
+            Graphique rectangleVictoire = new Graphique();
+            rectangleVictoire.dessinerRectangleInfo("GAME OVER", canvasNiveau);
+            stage.getScene().setOnKeyPressed(e -> {
+                if (e.getCode() == KeyCode.R) {
+                    perso.deplacePerso(e.getCode(), this);
+                    aT.start();
+                }
+                if (e.getCode() == KeyCode.M) { stage.setScene(sceneMenu);}
+            });
+        }
+    }
+
+    /** Cas où le personnage remporte le niveau
+     * Avec possibilité de rejouer ou de revenir au menu*/
+    public void finNiveauAtteint(AnimationTimer aT, Canvas canvasNiveau, Stage stage, Scene sceneMenu,Personnage perso, ArrayList<Niveau> listeNiveau){
+        if (perso.remporteNiveau(this)) {
+            System.out.println("Gagné !");
+            if (numeroNiveauActuel == totalNiveaux) {
+                aT.stop();
+                setNumeroNiveauActuel(1);
+                Graphique rectangleVictoire = new Graphique();
+                rectangleVictoire.dessinerRectangleInfo("VICTOIRE", canvasNiveau);
+                stage.getScene().setOnKeyPressed(e -> {
+                    if (e.getCode() == KeyCode.R) {
+                        perso.deplacePerso(e.getCode(), this);
+                        aT.start();
+                    }
+                    if (e.getCode() == KeyCode.M) stage.setScene(sceneMenu);
+                });
+            }
+            else {
+                setNumeroNiveauActuel(numeroNiveauActuel=numeroNiveauActuel+1);
+                listeNiveau.get(numeroNiveauActuel-1).lancementNiveau(numeroNiveauActuel,perso, canvasNiveau);
+            }
+        }
+    }
+
+
+    static public ArrayList<Niveau> creationNiveau(Personnage perso){
+        ArrayList<Niveau> listeNiveau= new ArrayList<>();
+        Niveau premierNiveau = new Niveau(perso);
+        listeNiveau.add(premierNiveau);
+        Niveau deuxiemeNiveau = new Niveau(perso);
+        listeNiveau.add(deuxiemeNiveau);
+
+        return listeNiveau;
     }
 }

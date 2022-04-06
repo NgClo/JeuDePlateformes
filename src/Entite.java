@@ -102,6 +102,18 @@ public class Entite {
         return false;
     }
 
+    public boolean blocEnDessous(Niveau niveau){
+        setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
+            for (int i = 0; i < niveau.getListeBlocs().size();i++){
+                if(niveau.getListeBlocs().get(i).getBloc().contains(this.typeHitBox("Pied").getMinX(),niveau.getListeBlocs().get(i).getBloc().getMaxY())
+                || niveau.getListeBlocs().get(i).getBloc().contains(this.typeHitBox("Pied").getMaxX(),niveau.getListeBlocs().get(i).getBloc().getMaxY() ))
+                    if(this.getPositionY() <= niveau.getListeBlocs().get(i).getBloc().getMinY())
+                    return true;
+            }
+            return false;
+
+    }
+
     /** Détermine si le personnage est sur un bloc ou non.*/
     protected boolean estSurUnBloc(Niveau niveau){
         setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));

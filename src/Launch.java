@@ -4,7 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -33,26 +32,23 @@ public class Launch extends Application {
             public void handle(ActionEvent actionEvent) {
                 StackPane rootNiveau = new StackPane(); // Creation du panneau pour les niveaux
                 Canvas canvasNiveau = new Canvas(1000, 650); // Creation du canvas
-                GraphicsContext gcNiveau = canvasNiveau.getGraphicsContext2D(); // Creation du GraphicsContext
                 rootNiveau.getChildren().add(canvasNiveau); // Association du canvas au niveau
                 Scene sceneNiveau = new Scene(rootNiveau, 1000, 650); // Creation d'une scène pour les niveaux avec un panneau associé
                 stage.setScene(sceneNiveau); // On place la scene du niveau dans la fenêtre
 
                 Personnage perso = new Personnage(); // Construction du personnage
-                // Chargement des frames du personnage
-                perso.setListeImageIdleDino();
-                perso.setListImageRunDino();
-                perso.setListImageRunDinoR();
+                perso.chargementFrame(); // Chargement des frames du personnage
 
-                Niveau premierNiveau = new Niveau(perso); // Creation du premier niveau avec association du personnage au niveau
-                premierNiveau.constructionPremierNiveau(); // Construction du premier niveau
+                ArrayList<Niveau> listeNiveau;
+                listeNiveau = Niveau.creationNiveau(perso);
 
-                premierNiveau.drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY()); // Dessine le premier niveau
+                listeNiveau.get(0).lancementNiveau(1,perso,canvasNiveau);
 
                 new AnimationTimer() {                // Debut de la boucle
 
                     @Override
                     public void handle(long l) {
+
 
                         // Récupère les touches appuyées : permet le mouvement, retour au menu et quitter le jeu
                         stage.getScene().setOnKeyPressed(e -> {
@@ -61,63 +57,26 @@ public class Launch extends Application {
                                 stage.setScene(sceneMenu);
                                 this.stop();
                             }
-                            perso.deplacePerso(e.getCode(), premierNiveau);
+                            perso.deplacePerso(e.getCode(), listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1));
                         });
 
                         // Récupère les touches quand elles sont relachées et permet l'arrêt
                         stage.getScene().setOnKeyReleased(e -> perso.ralentissement(e.getCode()));
 
-                        /* Remet la vitesse à 0 une fois que le personnage a atteri
-                        Si le personnage n'est pas en train de tomber mais qu'il tombait à la boucle précédent
-                        Alors la vitesse est remise à O.*/
-                        perso.setTombe(perso.gravite(premierNiveau));
-                        if (!perso.getTombe()) {
-                            if (perso.getTombeMoinsUn()) {
-                                perso.resetVitesse();
-                            }
-                        }
-                        perso.setTombeMoinsUn(perso.gravite(premierNiveau));
+                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).resetVitesseApresChute(perso);
 
                         // Reajuste la position du personnage si le personnage atteri DANS la plateforme
-                        if (perso.ecartPlateforme(premierNiveau) > 10 && perso.ecartPlateforme(premierNiveau) < 26)
-                            perso.setPositionY(perso.surQuelBloc(premierNiveau).getMinY() - 50);
+                        if (perso.ecartPlateforme(listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1)) > 10 && perso.ecartPlateforme(listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1)) < 26)
+                            perso.setPositionY(perso.surQuelBloc(listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1)).getMinY() - 50);
 
-                        premierNiveau.bordNiveau(); // Evite la sortie du niveau par les bords gauche et droit
+                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).bordNiveau(); // Evite la sortie du niveau par les bords gauche et droit
 
                         // Redessine le niveau et le personnage
-                        premierNiveau.drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY());
+                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY());
 
-                        /* Cas où le personnage tombe = GAME OVER
-                           Avec possibilité de rejouer ou de revenir au menu*/
-                        if (perso.getPositionY() > 1000) { // Le personnage tombe
-                            perso.resetVitesse();
-                            this.stop();
-                            Graphique rectangleVictoire = new Graphique();
-                            rectangleVictoire.dessinerRectangleInfo("GAME OVER", gcNiveau);
-                            stage.getScene().setOnKeyPressed(e -> {
-                                if (e.getCode() == KeyCode.R) {
-                                    perso.deplacePerso(e.getCode(), premierNiveau);
-                                    this.start();
-                                }
-                                if (e.getCode() == KeyCode.M) { stage.setScene(sceneMenu);}
-                            });
-                        }
+                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).mortPerso(perso,this, stage,canvasNiveau,sceneMenu);
 
-                        /* Cas où le personnage remporte le niveau
-                         * Avec possibilité de rejouer ou de revenir au menu*/
-                        if (perso.remporteNiveau(premierNiveau)) {
-                            System.out.println("Gagné !");
-                            this.stop();
-                            Graphique rectangleDefaite = new Graphique();
-                            rectangleDefaite.dessinerRectangleInfo("VICTOIRE", gcNiveau);
-                            stage.getScene().setOnKeyPressed(e -> {
-                                if (e.getCode() == KeyCode.R) {
-                                    perso.deplacePerso(e.getCode(), premierNiveau);
-                                    this.start();
-                                }
-                                if (e.getCode() == KeyCode.M) stage.setScene(sceneMenu);
-                            });
-                        }
+                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).finNiveauAtteint(this, canvasNiveau, stage, sceneMenu, perso, listeNiveau);
                     }
                 }.start();
             }

@@ -25,7 +25,7 @@ public class Personnage extends Entite {
     }
 
     /** Creation de la liste d'image lorsque le personnage ne bouge pas*/
-    public void setListeImageIdleDino() {
+    private void setListeImageIdleDino() {
         Image [] listeImageIdle = new Image[30];
         listeImageIdle[0] = new Image ("SpriteDinoCorrige/Idle/Idle_1.png",50,50,false, false);
         listeImageIdle[1] = listeImageIdle[0];
@@ -61,7 +61,7 @@ public class Personnage extends Entite {
         this.listeImageIdle = listeImageIdle;
     }
     /** Creation de la liste d'image lorsque le personne se déplace vers la droite.*/
-    public void setListImageRunDino(){
+    private void setListImageRunDino(){
         Image [] listeImageRun= new Image[32];
         listeImageRun[0] = new Image ("SpriteDinoCorrige/Run/Run_1.png",50,50,false, false);
         listeImageRun[1] = listeImageRun[0];
@@ -100,7 +100,7 @@ public class Personnage extends Entite {
     }
 
     /** Creation de la liste d'image lorsque le personne se déplace vers la gauche.*/
-    public void setListImageRunDinoR(){
+    private void setListImageRunDinoR(){
         Image [] listeImageRunR= new Image[32];
         listeImageRunR[0] = new Image ("SpriteDinoCorrige/Run/Run_1R.png",50,50,false, false);
         listeImageRunR[1] = listeImageRunR[0];
@@ -136,6 +136,12 @@ public class Personnage extends Entite {
         listeImageRunR[31] = listeImageRunR[28];
 
         this.listeImageRunR = listeImageRunR;
+    }
+
+    public void chargementFrame(){
+        this.setListeImageIdleDino();
+        this.setListImageRunDino();
+        this.setListImageRunDinoR();
     }
 
     /** Méthode appelée à chaque boucle de l'animation
@@ -175,7 +181,7 @@ public class Personnage extends Entite {
 
         // Permet le saut si le personnage se trouve sous le "plafond"
         if (keycode == KeyCode.Z){
-            if (!this.plafond(niveau)){
+            if (!this.plafond(niveau) && blocEnDessous(niveau)){
                 this.addVitesse(0,-4);
             }
         }
