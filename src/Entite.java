@@ -17,9 +17,11 @@ public class Entite {
     protected Image[] listeImageIdle;
     protected Image[] listeImageRun;
     protected Image[] listeImageRunR;
+    Image[] listeImageDead;
     protected int countImageIdle;
     protected int countImageRun;
     protected int countImageRunR;
+    int countImageDead;
 
     protected void setCountImageIdle(int countImage) {
         this.countImageIdle = countImage;
@@ -28,6 +30,9 @@ public class Entite {
         this.countImageRun = countImage;
     }
     protected void setCountImageRunR(int countImageRunR) { this.countImageRunR = countImageRunR;}
+    public void setCountImageDead(int countImageDead) {this.countImageDead = countImageDead;}
+
+    public int getCountImageDead() {return countImageDead;}
 
     protected Entite() {
         this.hitBox = new Rectangle2D(positionX, positionY, 50,53);
@@ -122,6 +127,16 @@ public class Entite {
             if (this.typeHitBox("Pied").intersects(niveau.getListeBlocs().get(i).getBloc())) estSurUnBloc = true;
         }
         return estSurUnBloc;
+    }
+
+    public boolean estSurUnPike(Niveau niveau){
+        setHitBox(new Rectangle2D(this.getPositionX(),this.getPositionY(),this.getHitBox().getWidth(), this.getHitBox().getHeight()));
+        boolean estSurUnBlocPikes = false;
+        for (int i = 0; i < niveau.getListeBlocs().size();i++){
+            if (this.typeHitBox("Pied").intersects(niveau.getListeBlocs().get(i).getBloc()))
+                if(niveau.getListeBlocs().get(i).getEstUnBlocPikes()) estSurUnBlocPikes = true;
+        }
+        return estSurUnBlocPikes;
     }
 
     /** A partir de la hitBox de base, retourne une plus petite zone de cette hitbox.

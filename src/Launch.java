@@ -5,7 +5,6 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.util.ArrayList;
@@ -44,39 +43,11 @@ public class Launch extends Application {
 
                 listeNiveau.get(0).lancementNiveau(1,perso,canvasNiveau);
 
-                new AnimationTimer() {                // Debut de la boucle
+                new AnimationTimer() {       // Debut de la boucle
 
                     @Override
                     public void handle(long l) {
-
-
-                        // Récupère les touches appuyées : permet le mouvement, retour au menu et quitter le jeu
-                        stage.getScene().setOnKeyPressed(e -> {
-                            if (e.getCode() == KeyCode.ESCAPE) stage.close();
-                            if (e.getCode() == KeyCode.M) { // Retour au menu
-                                stage.setScene(sceneMenu);
-                                this.stop();
-                            }
-                            perso.deplacePerso(e.getCode(), listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1));
-                        });
-
-                        // Récupère les touches quand elles sont relachées et permet l'arrêt
-                        stage.getScene().setOnKeyReleased(e -> perso.ralentissement(e.getCode()));
-
-                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).resetVitesseApresChute(perso);
-
-                        // Reajuste la position du personnage si le personnage atteri DANS la plateforme
-                        if (perso.ecartPlateforme(listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1)) > 10 && perso.ecartPlateforme(listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1)) < 26)
-                            perso.setPositionY(perso.surQuelBloc(listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1)).getMinY() - 50);
-
-                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).bordNiveau(); // Evite la sortie du niveau par les bords gauche et droit
-
-                        // Redessine le niveau et le personnage
-                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY());
-
-                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).mortPerso(perso,this, stage,canvasNiveau,sceneMenu);
-
-                        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).finNiveauAtteint(this, canvasNiveau, stage, sceneMenu, perso, listeNiveau);
+                        Niveau.ensembleActionsParLoop(stage,sceneMenu,this,perso, listeNiveau, canvasNiveau);
                     }
                 }.start();
             }

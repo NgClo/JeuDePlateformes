@@ -3,6 +3,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 
 public class Personnage extends Entite {
+    boolean isDead;
 
     Personnage(){
         super();
@@ -23,6 +24,9 @@ public class Personnage extends Entite {
     protected void setPositionY(double positionY) {
         this.positionY = positionY;
     }
+
+    public boolean getIsDead(){ return isDead;}
+    public void setIsDead(boolean isDead){ this.isDead = isDead;}
 
     /** Creation de la liste d'image lorsque le personnage ne bouge pas*/
     private void setListeImageIdleDino() {
@@ -138,10 +142,49 @@ public class Personnage extends Entite {
         this.listeImageRunR = listeImageRunR;
     }
 
+    private void setListImageDeadDino(){
+        Image [] listeImageDead= new Image[32];
+        listeImageDead[0] = new Image ("SpriteDinoCorrige/Dead/Dead_1.png",50,50,false, false);
+        listeImageDead[1] = listeImageDead[0];
+        listeImageDead[2] = listeImageDead[0];
+        listeImageDead[3] = listeImageDead[0];
+        listeImageDead[4] = new Image ("SpriteDinoCorrige/Dead/Dead_2.png",50,50,false, false);
+        listeImageDead[5] = listeImageDead[4];
+        listeImageDead[6] = listeImageDead[4];
+        listeImageDead[7] = listeImageDead[4];
+        listeImageDead[8] = new Image ("SpriteDinoCorrige/Dead/Dead_3.png",50,50,false, false);
+        listeImageDead[9] = listeImageDead[8];
+        listeImageDead[10] = listeImageDead[8];
+        listeImageDead[11] = listeImageDead[8];
+        listeImageDead[12] = new Image ("SpriteDinoCorrige/Dead/Dead_4.png",50,50,false, false);
+        listeImageDead[13] = listeImageDead[12];
+        listeImageDead[14] = listeImageDead[12];
+        listeImageDead[15] = listeImageDead[12];
+        listeImageDead[16] = new Image ("SpriteDinoCorrige/Dead/Dead_5.png",50,50,false, false);
+        listeImageDead[17] = listeImageDead[16];
+        listeImageDead[18] = listeImageDead[16];
+        listeImageDead[19] = listeImageDead[16];
+        listeImageDead[20] = new Image ("SpriteDinoCorrige/Dead/Dead_6.png",50,50,false, false);
+        listeImageDead[21] = listeImageDead[20];
+        listeImageDead[22] = listeImageDead[20];
+        listeImageDead[23] = listeImageDead[20];
+        listeImageDead[24] = new Image ("SpriteDinoCorrige/Dead/Dead_7.png",50,50,false, false);
+        listeImageDead[25] = listeImageDead[24];
+        listeImageDead[26] = listeImageDead[24];
+        listeImageDead[27] = listeImageDead[24];
+        listeImageDead[28] = new Image ("SpriteDinoCorrige/Dead/Dead_8.png",50,50,false, false);
+        listeImageDead[29] = listeImageDead[28];
+        listeImageDead[30] = listeImageDead[28];
+        listeImageDead[31] = listeImageDead[28];
+
+        this.listeImageDead = listeImageDead;
+    }
+
     public void chargementFrame(){
         this.setListeImageIdleDino();
         this.setListImageRunDino();
         this.setListImageRunDinoR();
+        this.setListImageDeadDino();
     }
 
     /** Méthode appelée à chaque boucle de l'animation
@@ -152,6 +195,12 @@ public class Personnage extends Entite {
             imageRetourne = listeImage[this.countImageIdle];
             if (this.countImageIdle < (listeImage.length-1)) setCountImageIdle(this.countImageIdle+1);
             else setCountImageIdle(0);
+        }
+
+        else if(listeImage == this.listeImageDead){
+            imageRetourne = listeImage[this.countImageDead];
+            if(this.countImageDead < (listeImage.length-1)) setCountImageDead(this.countImageDead+1);
+            else setCountImageDead(0);
         }
 
         else if (listeImage == this.listeImageRunR){
@@ -170,22 +219,23 @@ public class Personnage extends Entite {
 
     /** Selon la touche sur laquelle on appuie, on applique une certaine vitesse*/
     protected void deplacePerso(KeyCode keycode, Niveau niveau){
-        if (keycode == KeyCode.D) this.addVitesse(4,0); // Ajout d'une vitesse vers la droite
+        if(!this.getIsDead()) {
+            if (keycode == KeyCode.D) this.addVitesse(4, 0); // Ajout d'une vitesse vers la droite
 
-        if (keycode == KeyCode.Q) this.addVitesse(-4,0); // Ajout d'une vitesse vers la gauche
+            if (keycode == KeyCode.Q) this.addVitesse(-4, 0); // Ajout d'une vitesse vers la gauche
 
-        if (keycode == KeyCode.R){ // Réinitialise la position du personnage
-            setPositionX(20);
-            setPositionY(450);
-        }
+            if (keycode == KeyCode.R) { // Réinitialise la position du personnage
+                setPositionX(20);
+                setPositionY(450);
+            }
 
-        // Permet le saut si le personnage se trouve sous le "plafond"
-        if (keycode == KeyCode.Z){
-            if (!this.plafond(niveau) && blocEnDessous(niveau)){
-                this.addVitesse(0,-4);
+            // Permet le saut si le personnage se trouve sous le "plafond"
+            if (keycode == KeyCode.Z) {
+                if (!this.plafond(niveau) && blocEnDessous(niveau)) {
+                    this.addVitesse(0, -4);
+                }
             }
         }
-
         // Mise à jour des positions en fonction des vitesses
         setPositionX(getPositionX()+this.vitesseX);
         setPositionY(getPositionY()+this.vitesseY);

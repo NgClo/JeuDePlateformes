@@ -22,7 +22,7 @@ public class Niveau {
         this.perso = perso;
     }
 
-    public static int getNumeroNiveauActuel() {
+    private static int getNumeroNiveauActuel() {
         return numeroNiveauActuel;
     }
 
@@ -56,6 +56,8 @@ public class Niveau {
         this.listeBlocs = new ArrayList<>();
         this.listeBlocs.addAll(constrPlateformes(0, 630, 5));
         this.listeBlocs.addAll(constrPlateformes(10, 630, 8));
+
+        this.listeBlocs.add(new BlocsDeConstruction(500,620));
 
         this.listeBlocs.addAll(constrPlateformes(6, 520, 4));
 
@@ -91,7 +93,7 @@ public class Niveau {
 
         this.listeBlocs.addAll(constrPlateformes(58, 550, 10));
 
-        this.listeBlocs.addAll(constrPlateformes(88, 580, 30));
+        this.listeBlocs.addAll(constrPlateformes(88, 350, 30));
 
         int emplacementDernierBloc = this.listeBlocs.size() - 1;
 
@@ -110,14 +112,15 @@ public class Niveau {
      * Dans un premier temps, le fond est dessiné
      * Dans un second temps, les blocs sont dessinés selon la position du personnage
      * Dans un troisième temps, le personnage est dessiné selon sa position et la direction dans laquelle il se dirige.*/
-    public void drawNiveau(Canvas canvasNiveau, double X, double Y) {
+    private void drawNiveau(Canvas canvasNiveau, double X, double Y) {
         GraphicsContext gcDraw = canvasNiveau.getGraphicsContext2D();
 
         gcDraw.drawImage(fondEcran, 0, 0, 1000, 650);
         Graphique.nomNiveau(numeroNiveauActuel,canvasNiveau);
         Image[] listeAChoisir;
         // Selon la vitesse horizontale du personnage, on change quelle liste d'animation est choisie
-        if (perso.getVitesseX() == 0) listeAChoisir = this.perso.listeImageIdle;
+        if (perso.getIsDead()) listeAChoisir = this.perso.listeImageDead;
+        else if (perso.getVitesseX() == 0) listeAChoisir = this.perso.listeImageIdle;
         else if (perso.getVitesseX() > 0) listeAChoisir = this.perso.listeImageRun;
         else listeAChoisir = this.perso.listeImageRunR;
 
@@ -157,6 +160,7 @@ public class Niveau {
         }
     }
 
+    /** Construit le niveau et le dessiner une première fois*/
     public void lancementNiveau(int numNiveau, Personnage perso, Canvas canvasNiveau){
         if (numNiveau == 1){
             this.constructionPremierNiveau(); // Construction du premier niveau
@@ -181,21 +185,32 @@ public class Niveau {
         perso.setTombeMoinsUn(perso.gravite(this));
     }
 
+
     /** Cas où le personnage tombe = GAME OVER
        Avec possibilité de rejouer ou de revenir au menu*/
     public void mortPerso(Personnage perso, AnimationTimer aT, Stage stage, Canvas canvasNiveau, Scene sceneMenu){
-        if (perso.getPositionY() > 1000) { // Le personnage tombe
+        if (perso.getPositionY() > 1000 || perso.estSurUnPike(this)) { // Le personnage tombe
             perso.resetVitesse();
-            aT.stop();
-            Graphique rectangleVictoire = new Graphique();
-            rectangleVictoire.dessinerRectangleInfo("GAME OVER", canvasNiveau);
-            stage.getScene().setOnKeyPressed(e -> {
-                if (e.getCode() == KeyCode.R) {
-                    perso.deplacePerso(e.getCode(), this);
-                    aT.start();
+            if (perso.estSurUnPike(this)){
+                perso.setIsDead(true);
+                drawNiveau(canvasNiveau,this.perso.getPositionX(), this.perso.getPositionY());
+                if(perso.getCountImageDead() == 31){
+                    perso.setIsDead(false);
                 }
-                if (e.getCode() == KeyCode.M) { stage.setScene(sceneMenu);}
-            });
+            }
+            if (!perso.getIsDead()){
+                aT.stop();
+                perso.setCountImageDead(0);
+                Graphique rectangleVictoire = new Graphique();
+                rectangleVictoire.dessinerRectangleInfo("GAME OVER", canvasNiveau);
+                stage.getScene().setOnKeyPressed(e -> {
+                    if (e.getCode() == KeyCode.R) {
+                        perso.deplacePerso(e.getCode(), this);
+                        aT.start();
+                    }
+                    if (e.getCode() == KeyCode.M) { stage.setScene(sceneMenu);}
+                });
+            }
         }
     }
 
@@ -224,14 +239,48 @@ public class Niveau {
         }
     }
 
-
+    /** Création des niveaux et ajout de ces niveaux à une liste*/
     static public ArrayList<Niveau> creationNiveau(Personnage perso){
         ArrayList<Niveau> listeNiveau= new ArrayList<>();
         Niveau premierNiveau = new Niveau(perso);
         listeNiveau.add(premierNiveau);
         Niveau deuxiemeNiveau = new Niveau(perso);
         listeNiveau.add(deuxiemeNiveau);
-
         return listeNiveau;
+    }
+
+    /** Ensemble des actions à effectuer par loop
+     * Controle des touches appuyées et relâchées
+     * Appel de la méthode pour dessiner le niveau
+     * Est-ce que le personnage est mort ?
+     * Est-ce que le personnage a atteint la fin du niveau ?*/
+    static public void  ensembleActionsParLoop(Stage stage, Scene sceneMenu, AnimationTimer aT, Personnage perso, ArrayList<Niveau> listeNiveau,
+                                               Canvas canvasNiveau){
+        // Récupère les touches appuyées : permet le mouvement, retour au menu et quitter le jeu
+        stage.getScene().setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) stage.close();
+            if (e.getCode() == KeyCode.M) { // Retour au menu
+                stage.setScene(sceneMenu);
+                aT.stop();
+            }
+            perso.deplacePerso(e.getCode(), listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1));
+        });
+
+        // Récupère les touches quand elles sont relachées et permet l'arrêt
+        stage.getScene().setOnKeyReleased(e -> perso.ralentissement(e.getCode()));
+
+        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).resetVitesseApresChute(perso);
+
+        // Reajuste la position du personnage si le personnage atteri DANS la plateforme
+        if (perso.ecartPlateforme(listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1)) > 10 && perso.ecartPlateforme(listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1)) < 26)
+            perso.setPositionY(perso.surQuelBloc(listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1)).getMinY() - 50);
+
+        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).bordNiveau(); // Evite la sortie du niveau par les bords gauche et droit
+
+        // Redessine le niveau et le personnage
+        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).drawNiveau(canvasNiveau, perso.getPositionX(), perso.getPositionY());
+
+        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).mortPerso(perso,aT, stage,canvasNiveau,sceneMenu);
+        listeNiveau.get(Niveau.getNumeroNiveauActuel() - 1).finNiveauAtteint(aT, canvasNiveau, stage, sceneMenu, perso, listeNiveau);
     }
 }
